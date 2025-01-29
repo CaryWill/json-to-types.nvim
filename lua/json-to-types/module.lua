@@ -20,7 +20,7 @@ M.write_types = function(target_language)
     helper.types_output(file_name, target_language)
     os.remove(file_path)
   else
-    vim.notify("ERROR: Something went wrong")
+    vim.notify("Something went wrong", vim.log.levels.ERROR)
   end
 end
 
@@ -42,7 +42,7 @@ M.write_types_buffer = function(target_language)
       return
     end
     if string.find(types[1], Error_message) then
-      vim.notify(Error_message)
+      vim.notify(Error_message, vim.log.levels.ERROR)
       os.remove(file_path)
     else
       os.remove(file_path)
@@ -57,7 +57,7 @@ M.write_types_buffer = function(target_language)
       vim.api.nvim_buf_set_lines(buffer_number, 0, -1, false, lines)
     end
   else
-    vim.notify("Error: Unable to open the file for writing")
+    vim.notify("Error: Unable to open the file for writing", vim.log.levels.ERROR)
   end
 end
 

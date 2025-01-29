@@ -38,7 +38,7 @@ local function get_file_info(language)
   return filetype_map[language] or { extension = "txt", filetype = "text" }
 end
 
-M.executeTypesCommand = function(file_name, target_language)
+M.execute_node_command = function(file_name, target_language)
   local base_name = vim.fn.fnamemodify(file_name, ":t:r")
   local file_info = get_file_info(target_language)
   local types_output_file = vim.fn.expand("%:h") .. "/" .. "Types-" .. base_name .. "." .. file_info.extension
@@ -68,7 +68,7 @@ M.buffer_to_string = function(filetype)
     local content = vim.api.nvim_buf_get_lines(0, 0, vim.api.nvim_buf_line_count(0), false)
     return table.concat(content, "\n")
   else
-    vim.notify("Error: Filetype is not JSON")
+    vim.notify("Filetype is not JSON", vim.log.levels.ERROR)
     return
   end
 end
