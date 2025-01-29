@@ -14,8 +14,9 @@ vim.api.nvim_create_user_command("ConvertJSONtoLang", function(args)
 end, {
   nargs = 1,
   complete = function()
-    return utils.language_map()
+    return utils.language_map
   end,
+  desc = "Convert JSON to Typescript",
 })
 
 vim.api.nvim_create_user_command("ConvertJSONtoLangBuffer", function(args)
@@ -31,6 +32,7 @@ vim.api.nvim_create_user_command("ConvertJSONtoLangBuffer", function(args)
 end, {
   nargs = 1,
   complete = function()
-    return utils.language_map()
+    return utils.language_map
   end,
+  desc = "Convert JSON to Typescript",
 })
