@@ -1,19 +1,20 @@
 # 🚬 json-to-types.nvim
 
-A plugin for lazy people who don't want to write types by hand. This plugin will convert JSON to various types based on the selected language.
+A Neovim plugin designed to simplify the process of generating type definitions from JSON. This plugin supports multiple programming languages, making it a versatile tool for developers who want to save time and avoid manually writing type definitions.
 
 ## 📋 Requirements
 
 - Neovim >= **0.8.0** (needs to be built with **LuaJIT**)
 
-## Updates
+## Supported Languages
 
-### Major Update:
-
-Added support for multiple languages. The list of supported languages is as follows:
+Below is a list of the languages that are currently supported:
 
 - [x] TypeScript
+  - [x] TypeScript Zod
+  - [x] TypeScript Effect Schema
 - [x] JavaScript
+  - [x] JavaScript Prop Types
 - [x] Python
 - [x] C#
 - [x] Go
@@ -31,17 +32,10 @@ Added support for multiple languages. The list of supported languages is as foll
 - [x] Flow
 - [x] Haskell
 - [x] Java
-- [x] JavaScript Prop Types
 - [x] Objective-C
 - [x] Pike
 - [x] Scala3
 - [x] Smithy
-- [x] TypeScript Zod
-- [x] TypeScript Effect Schema
-
-### Breaking Changes:
-
-- The commands `ConvertJSONtoTS` and `ConvertJSONtoTSBuffer` have been renamed to `ConvertJSONtoLang` and `ConvertJSONtoLangBuffer` respectively. Please update your keybindings and scripts accordingly.
 
 ## 📦 Installation
 
@@ -51,28 +45,27 @@ Install the plugin with your preferred package manager:
 
 ```lua
 {
-"Redoxahmii/json-to-types.nvim",
-build = "sh install.sh npm",
-keys = {
-{
-"<leader>cu",
-"<CMD>ConvertJSONtoLang typescript<CR>",
-desc = "Convert JSON to TS",
-},
-{
-"<leader>ct",
-"<CMD>ConvertJSONtoLangBuffer typescript<CR>",
-desc = "Convert JSON to TS in buffer",
-},
-},
-}
+    "Redoxahmii/json-to-types.nvim",
+    build = "sh install.sh npm", -- Replace `npm` with your preferred package manager (e.g., yarn, pnpm).
+    ft = "json",
+    keys = {
+      {
+        "<leader>cU",
+        "<CMD>ConvertJSONtoLang typescript<CR>",
+        desc = "Convert JSON to TS",
+      },
+      {
+        "<leader>ct",
+        "<CMD>ConvertJSONtoLangBuffer typescript<CR>",
+        desc = "Convert JSON to TS Buffer",
+      },
+    },
+  }
 ```
 
 - Provide your installer in the build command. Instead of `npm`, you can pass whatever you are using such as `yarn`.
 
 ## 🚀 Usage
-
-### 🆕 New
 
 - To create keymaps for the language you want, you can refer to the method provided above or use it directly in command mode as well:
 
@@ -109,11 +102,39 @@ desc = "Convert JSON to TS in buffer",
 - Similarly, you can use the `ConvertJSONtoLangBuffer` command to create a new buffer with type definitions so you can make your changes immediately.
 - Supported languages are listed above for your reference.
 - The reason for appending `Types-` before the file name is to avoid overwriting if there is an already existing `.{extension}` file in the same directory with the same name.
-- The base command has been renamed to `ConvertJSONtoLang` and the buffer command has been renamed to `ConvertJSONtoLangBuffer`.
 - You can also make keybindings for the mentioned commands by referring to the method provided above.
 
-## 👷 Features to Come
+## Using with `kulala.nvim`
 
-- [x] Create a read-only buffer with the types.
-- [x] Support for other languages.
-- [ ] Allow user to paste their API Link and get the types automatically.
+You can use this plugin with [kulala.nvim](https://github.com/mistweaverco/kulala.nvim) to get the types automatically when you make a request to an API.
+
+Here's an example of how you can make a keybinding for this:
+
+```lua
+      {
+        "<leader>Rw",
+        function()
+          require("kulala.api").on("after_next_request", function(data)
+            local filename = "kulala.json"
+            local file = io.open(filename, "w")
+            if not file then
+              print("Error: Failed to open file for writing")
+              return
+            end
+            file:write(data.body)
+            file:close()
+            vim.cmd("edit " .. filename)
+            local buf = vim.api.nvim_get_current_buf()
+            vim.cmd("ConvertJSONtoLang typescript")
+            vim.api.nvim_buf_delete(buf, { force = true })
+            os.remove(filename)
+          end)
+          require("kulala").run()
+        end,
+        desc = "Toggle API Callback for JSON to TS Buffer",
+      },
+```
+
+You can replace `typescript` with the language you want to use and this will acts as a toggle to ensure you can keep using your `kulala.nvim` bindings as you've setup.
+
+After one request, `kulala.nvim` will default to it's own behavior.
