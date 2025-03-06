@@ -24,6 +24,27 @@ M.write_types = function(target_language)
   end
 end
 
+M.write_types_copy_mode = function(target_language)
+  local bufnr = vim.api.nvim_get_current_buf()
+  local file_name = vim.api.nvim_buf_get_name(bufnr)
+  local text = utils.format_selected_to_json()
+  if not text then
+    return
+  end
+  local file_path = "./test.txt"
+  local file = io.open(file_path, "w+")
+  if file then
+    file:write(text)
+    file:close()
+    local result = helper.types_output_result(file_name, target_language)
+    vim.fn.setreg("+", result)
+    -- TODO: Exit visual mode
+    os.remove(file_path)
+  else
+    vim.notify("Something went wrong", vim.log.levels.ERROR)
+  end
+end
+
 M.write_types_buffer = function(target_language)
   local bufnr = vim.api.nvim_get_current_buf()
   local file_name = vim.api.nvim_buf_get_name(bufnr)

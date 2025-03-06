@@ -106,4 +106,33 @@ M.language_map = {
   "ruby",
 }
 
+function format_selected_to_json()
+    -- Get the selected text
+    local start_pos = vim.fn.getpos("'<")  -- Start position of visual selection
+    local end_pos = vim.fn.getpos("'>")    -- End position of visual selection
+
+    -- Get lines from the visual selection
+    local lines = vim.fn.getline(start_pos[2], end_pos[2])
+
+    -- Initialize a table to hold the key-value pairs
+    local tbl = {}
+
+    -- Process selected lines to extract key-value pairs
+    for _, line in ipairs(lines) do
+        local key, value = line:match("([^:]+):%s*(.*)")
+        if key and value then
+            -- Trim whitespace around key and value
+            key = key:match("^%s*(.-)%s*$")
+            value = value:match("^%s*(.-)%s*$")
+            tbl[key] = value
+        end
+    end
+
+    -- Convert the table to JSON
+    local json_text = vim.fn.json_encode(tbl)
+  return json_text
+end
+
+M.format_selected_to_json = format_selected_to_json
+
 return M

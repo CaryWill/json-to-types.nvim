@@ -27,5 +27,10 @@ M.convertTypesBuffer = function(type)
     return module.write_types_buffer(type)
   end
 end
+M.convertTypesCopy = function(type)
+  if type then
+    return module.write_types_copy_mode(type)
+  end
+end
 
 return M
